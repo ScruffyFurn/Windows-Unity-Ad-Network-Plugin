@@ -143,17 +143,20 @@ public class WindowsAd : MonoBehaviour {
 	void OnGUI()
 	{
 		GUI.skin = skin;
-		if(GUI.Button(new Rect( (Screen.width * positionX * 0.01f)+ (Screen.width * 0.5f) - (winWidth * 0.5f),(Screen.height * positionY * 0.01f) + (Screen.height * 0.5f),winWidth,winHeight),AdFillers[curAd].image))
+		if (showAdFiller && useAdFiller) 
 		{
-			#if !UNITY_EDITOR
-			if(AdFillers[curAd].url != null || AdFillers[curAd].url != "")
-				WindowsHelperPlugin.Helper.Instance.OpenWebPage(AdFillers[curAd].url);
-			#else
-			if(AdFillers[curAd].url != null || AdFillers[curAd].url != "")
-				Application.OpenURL(AdFillers[curAd].url);
-			#endif
-			
+			if (GUI.Button (new Rect ((Screen.width * positionX * 0.01f) + (Screen.width * 0.5f) - (winWidth * 0.5f), (Screen.height * positionY * 0.01f) + (Screen.height * 0.5f), winWidth, winHeight), AdFillers [curAd].image)) 
+			{
+				#if !UNITY_EDITOR
+if(AdFillers[curAd].url != null || AdFillers[curAd].url != "")
+WindowsHelperPlugin.Helper.Instance.OpenWebPage(AdFillers[curAd].url);
+				#else
+				if (AdFillers [curAd].url != null || AdFillers [curAd].url != "")
+						Application.OpenURL (AdFillers [curAd].url);
+				#endif
+			}
 		}
+
 	}
 	/*<Summary>
 	 * When the script is destroyed, the destruction handler within the windows helper plugin is called
