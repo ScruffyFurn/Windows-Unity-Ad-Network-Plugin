@@ -13,16 +13,29 @@ public class AdMobAd : MonoBehaviour {
 
 	//General Settings
 	public bool useAdFiller = true;
-	public float positionX = 0;
-	public float positionY = 0;
+	public Windows_Ad_Plugin.Helper.HORIZONTAL_ALIGNMENT horizontalAlignment = 
+		Windows_Ad_Plugin.Helper.HORIZONTAL_ALIGNMENT.CENTER;
+	public Windows_Ad_Plugin.Helper.VERTICAL_ALIGNMENT verticalAlignment = 
+		Windows_Ad_Plugin.Helper.VERTICAL_ALIGNMENT.CENTER;
 
+	
 	public bool printDebug = true;
 
-	public WindowsHelperPlugin.Helper.AD_FORMATS Format = WindowsHelperPlugin.Helper.AD_FORMATS.BANNER;
+	public Windows_Ad_Plugin.Helper.AD_FORMATS Format = Windows_Ad_Plugin.Helper.AD_FORMATS.BANNER;
 
-	//Cached ad location for the gui
-	private Vector3 adLocation;
+	//These are constants to deal with the different alignments
+	//These are screen percentages for the ad filler position
+	private const int H_CENTER = 50;
+	private const int H_LEFT = 0;
+	private const int H_RIGHT = 100;
 	
+	private const int V_BOTTOM = 100;
+	private const int V_TOP = 0;
+	private const int V_CENTER = 50;
+	
+	//Variables to store the ad filler position
+	private float fillX;
+	private float fillY;
 	[System.Serializable]
 	public class AdFiller
 	{
@@ -39,13 +52,15 @@ public class AdMobAd : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		if (WindowsHelperPlugin.Helper.Instance.HasGrid ())
+		if (Windows_Ad_Plugin.Helper.Instance.HasGrid ())
 		{
 			CreateAd();
 		}
 		
 		CreateSkin ();
 	
+		//Set the adfiller position right away
+		SetAdFillerPosition ();
 	}
 	
 	/*<Summary>
@@ -56,39 +71,89 @@ public class AdMobAd : MonoBehaviour {
 	void Update () 
 	{
 
-		error = WindowsHelperPlugin.Helper.Instance.GetErrorMesssage ();
+		error = Windows_Ad_Plugin.Helper.Instance.GetErrorMesssage ();
 		if(error !="" && printDebug)
 			Debug.Log ("Error:" + error);
 		
-		if (!WindowsHelperPlugin.Helper.Instance.IsBuilt() && WindowsHelperPlugin.Helper.Instance.HasGrid ()) 
+		if (!Windows_Ad_Plugin.Helper.Instance.IsBuilt() && Windows_Ad_Plugin.Helper.Instance.HasGrid ()) 
 		{
 			CreateAd();
 		}
 		UpdateAdFiller ();
+
+		#if UNITY_EDITOR
+		SetAdFillerPosition();
+		#endif
 	}
 
 	/*<Summary>
 	 * Function calls the Create Ad function in the plugin
 	 * Based on what information is passed in, you will get an admob or windows ad
-	 * Thats if you were to call it but in this case all you need to do is set the adType to 
-	 * correct type
-	 * Easy as pie
+	 * Thats if you were to call it but in this case the code is separated into to scripts
 	 <Summary>*/
 	public void CreateAd()
 	{
-		adLocation = new Vector3 ( (Screen.width * positionX * 0.01f),(Screen.height * positionY * 0.01f) + (mobHeight) ,1f);
-
-		//Debug.Log (adLocation + " " + Screen.width + " " + Screen.width * 0.5f + " " + Screen.height + " " + Screen.height * 0.5f + " " + mobWidth + " " + mobWidth *0.5f + " " + mobHeight + " " + mobHeight *0.5f);
-
-		WindowsHelperPlugin.Helper.Instance.CreateAd(
+		Windows_Ad_Plugin.Helper.Instance.CreateAd(
 			adMobId,
 			Format,
-			(double)adLocation.x,
-			(double)adLocation.y,
+			horizontalAlignment,
+			verticalAlignment,
 			(double)mobWidth,
 			(double)mobHeight,
 			testAdMob);
 	}
+
+	/*<Summary>
+	 * Sets the adfiller position based on the horizontal and vertical alignment variables
+	 * </Summary>*/
+	private void SetAdFillerPosition()
+	{
+		//Set the AdFIllers x value
+		switch (horizontalAlignment)
+		{
+		case Windows_Ad_Plugin.Helper.HORIZONTAL_ALIGNMENT.CENTER:
+			fillX = H_CENTER;
+			break;
+		case Windows_Ad_Plugin.Helper.HORIZONTAL_ALIGNMENT.LEFT:
+			fillX = H_LEFT;
+			break;
+		case Windows_Ad_Plugin.Helper.HORIZONTAL_ALIGNMENT.RIGHT:
+			fillX = H_RIGHT;
+			break;
+		default:
+			fillX = H_CENTER;
+			break;
+		}
+		//Set the Adfillers y value
+		switch (verticalAlignment)
+		{
+		case Windows_Ad_Plugin.Helper.VERTICAL_ALIGNMENT.CENTER:
+			fillY = V_CENTER;
+			break;
+		case Windows_Ad_Plugin.Helper.VERTICAL_ALIGNMENT.BOTTOM:
+			fillY = V_BOTTOM;
+			break;
+		case Windows_Ad_Plugin.Helper.VERTICAL_ALIGNMENT.TOP:
+			fillY = V_TOP;
+			break;
+		default:
+			fillY = V_CENTER;
+			break;
+		}
+
+		//Now we apply the changes
+		fillX = (Screen.width * fillX * 0.01f) - (mobWidth * 0.5f);
+		fillY = (Screen.height * fillY * 0.01f);
+		//Have to make one small alteration when its at the bottom though
+		if (verticalAlignment == Windows_Ad_Plugin.Helper.VERTICAL_ALIGNMENT.BOTTOM)
+			fillY -= mobHeight;
+		//Make this correction as well so the ad filler stays on screen
+		if (horizontalAlignment == Windows_Ad_Plugin.Helper.HORIZONTAL_ALIGNMENT.LEFT)
+			fillX += mobWidth * 0.5f;
+		else if (horizontalAlignment == Windows_Ad_Plugin.Helper.HORIZONTAL_ALIGNMENT.RIGHT)
+			fillX -= mobWidth * 0.5f;
+	}
+
 
 	/*<Summary>
 	 * Checks to see if its possible to show an adfiller
@@ -100,18 +165,17 @@ public class AdMobAd : MonoBehaviour {
 	{
 		if (AdFillers != null && AdFillers.Count > 0 && useAdFiller) 
 		{
-			if (WindowsHelperPlugin.Helper.Instance.IsThereAnAd () ) 
+			if (Windows_Ad_Plugin.Helper.Instance.IsThereAnAd () ) 
 			{
 				showAdFiller = false;	
 			}
-			else if (!WindowsHelperPlugin.Helper.Instance.IsThereAnAd () && !showAdFiller) 
+			else if (!Windows_Ad_Plugin.Helper.Instance.IsThereAnAd () && !showAdFiller) 
 			{
 				showAdFiller = true;
 				curAd++;
 				if (curAd >= AdFillers.Count) 
 					curAd = 0;
 				
-				adLocation = Camera.main.ScreenToViewportPoint(new Vector3 (adLocation.x,adLocation.y,1f));
 			}
 		}
 	}
@@ -119,22 +183,21 @@ public class AdMobAd : MonoBehaviour {
 	/*<Summary>
 	 * The OnGUI function is used to show the adFiller
 	 * And handle the adFiller's click event (since its just a button
-	 * The origin in windows apps is in the center of the screen
-	 * So we need to do a conversion
 	 <Summary>*/
 	void OnGUI()
 	{
 		GUI.skin = skin;
-		if (showAdFiller && useAdFiller)
+		if (showAdFiller && useAdFiller) 
 		{
-			if(GUI.Button(new Rect( (Screen.width * positionX * 0.01f)+ (Screen.width * 0.5f) - (mobWidth * 0.5f),(Screen.height * positionY * 0.01f) + (Screen.height * 0.5f),mobWidth,mobHeight),AdFillers[curAd].image))
-			{
+			GUI.skin = skin;
+			GUI.DrawTexture(new Rect ( fillX,fillY, mobWidth , mobHeight),AdFillers [curAd].image,ScaleMode.StretchToFill);
+			if (GUI.Button (new Rect (fillX,fillY, mobWidth , mobHeight),"")) {
 				#if !UNITY_EDITOR
 				if(AdFillers[curAd].url != null || AdFillers[curAd].url != "")
-					WindowsHelperPlugin.Helper.Instance.OpenWebPage(AdFillers[curAd].url);
+					Windows_Ad_Plugin.Helper.Instance.OpenWebPage(AdFillers[curAd].url);
 				#else
-				if(AdFillers[curAd].url != null || AdFillers[curAd].url != "")
-					Application.OpenURL(AdFillers[curAd].url);
+				if (AdFillers [curAd].url != null || AdFillers [curAd].url != "")
+					Application.OpenURL (AdFillers [curAd].url);
 				#endif
 				
 			}
@@ -147,7 +210,7 @@ public class AdMobAd : MonoBehaviour {
 	 * </Summary>*/
 	void OnDestroy()
 	{
-		WindowsHelperPlugin.Helper.Instance.HandleDestruction ();
+		Windows_Ad_Plugin.Helper.Instance.HandleDestruction ();
 	}
 
 	/*<Summary>

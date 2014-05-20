@@ -167,8 +167,8 @@
     <Reference Include="UnityEngine">
       <HintPath>UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="WindowsHelperPlugin">
-      <HintPath>..\..\Assets\Plugins\WP8\WindowsHelperPlugin.dll</HintPath>
+    <Reference Include="Windows_Ad_Plugin">
+      <HintPath>..\..\Demo Unity Project\Assets\Plugins\WP8\Windows_Ad_Plugin.dll</HintPath>
     </Reference>
     <Reference Include="WinRTLegacy">
       <HintPath>WinRTLegacy.dll</HintPath>

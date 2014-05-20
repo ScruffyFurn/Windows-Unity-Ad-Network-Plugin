@@ -34,6 +34,7 @@ namespace AdPlugin
 			bridge.Control = DrawingSurfaceBackground;
 		}
 
+
         public void InvokeOnAppThread(Action callback)
         {
             UnityApp.BeginInvoke(() => callback());
@@ -69,9 +70,10 @@ namespace AdPlugin
 		{
 			SetupGeolocator();
 
-            WindowsHelperPlugin.Dispatcher.InvokeOnAppThread = InvokeOnAppThread;
-            WindowsHelperPlugin.Dispatcher.InvokeOnUIThread = InvokeOnUIThread;
-            WindowsHelperPlugin.Helper.Instance.SetGrid(DrawingSurfaceBackground);
+            Windows_Ad_Plugin.Dispatcher.InvokeOnAppThread = InvokeOnAppThread;
+            Windows_Ad_Plugin.Dispatcher.InvokeOnUIThread = InvokeOnUIThread;
+
+            Windows_Ad_Plugin.Helper.Instance.SetGrid(DrawingSurfaceBackground);
 		}
 
 		private void PhoneApplicationPage_BackKeyPress(object sender, CancelEventArgs e)

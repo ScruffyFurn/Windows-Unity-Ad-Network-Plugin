@@ -13,6 +13,7 @@ using Windows.Graphics.Display;
 using Windows.ApplicationModel;
 using Microsoft.Advertising.WinRT.UI;
 using Windows.UI.Xaml;
+using System.Diagnostics;
 #elif WINDOWS_PHONE
 using Microsoft.Phone.Tasks;
 using System.Xml.Linq;
@@ -39,24 +40,24 @@ namespace Windows_Ad_Plugin
         private SwapChainBackgroundPanel backPanel = null;
 #endif
 
-//Windows Ads
+        //Windows Ads
 #if WINDOWS_PHONE || NETFX_CORE
-      private AdControl _ad { get; set; }
+      private AdControl _ad = null;
 #endif
 
-//AdMob Stuff
+        //AdMob Stuff
 #if WINDOWS_PHONE
-      private AdView _ad_Google { get; set; }
+      private AdView _ad_Google = null;
 #endif
 
-        //Our own enum replacement for System.Windows.VerticalAlignment & System.Windows.HorizontalAlignment since we will not have access to those 
-        //within Unity
-
-        public enum VERTICAL_ALIGNMENT { BOTTOM, CENTER, STRETCH, TOP };
-        public enum HORIZONTAL_ALIGNMENT { CENTER, LEFT, RIGHT, STRETCH };
+        //Our own enum replacement for 
+        //System.Windows.VerticalAlignment & System.Windows.HorizontalAlignment 
+        //since we will not have access to those within Unity
+        public enum VERTICAL_ALIGNMENT { BOTTOM, CENTER, TOP };
+        public enum HORIZONTAL_ALIGNMENT { CENTER, LEFT, RIGHT };
 
         //Our own enum for Google's AdFormats
-        public enum AD_FORMATS {BANNER,SMART_BANNER};
+        public enum AD_FORMATS { BANNER, SMART_BANNER };
 
         private static Helper _instance;
         private bool _isBuilt = false;
@@ -82,50 +83,32 @@ namespace Windows_Ad_Plugin
 
         public Helper()
         {
-#if NETFX_CORE 
-            Dispatcher.InvokeOnUIThread(() =>
-            {
-                DisplayInformation.GetForCurrentView().OrientationChanged += Helper_OrientationChanged;
-            });
-#endif
         }
 
         public void Dispose()
         {
-#if NETFX_CORE 
-            Dispatcher.InvokeOnUIThread(() =>
-            {
-                DisplayInformation.GetForCurrentView().OrientationChanged -= Helper_OrientationChanged;
-            });
-#endif
         }
-#if NETFX_CORE
-        private void Helper_OrientationChanged(DisplayInformation sender, object args)
-        {
-            throw new NotImplementedException();
-        }
-#endif
-        
+
         //This function is public and called from Unity
         //It then uses the dispatcher to invoke on the UI thread
 
         /*<Summary>
          * Windows ad service overload
         </Summery>*/
-        public void CreateAd(string apId, string unitId, double height, double width, bool autoRefresh, double left, double top)
+        public void CreateAd(string apId, string unitId, double height, double width, bool autoRefresh, HORIZONTAL_ALIGNMENT horizontalAlign, VERTICAL_ALIGNMENT vertAlign)
         {
 #if WINDOWS_PHONE || NETFX_CORE
             Dispatcher.InvokeOnUIThread(() =>
                 {
-                   BuildAd(apId, unitId, height, width, autoRefresh,left,top);
+                   BuildAd(apId, unitId, height, width, autoRefresh,horizontalAlign,vertAlign);
                 });
 #endif
         }
-       /*<Summary>
-        * Builds a windows ad service ad
-       </Summery>*/
-       private void BuildAd(string apId, string unitId, double height, double width, bool autoRefresh, double left, double top)
-       {
+        /*<Summary>
+         * Builds a windows ad service ad
+        </Summery>*/
+        private void BuildAd(string apId, string unitId, double height, double width, bool autoRefresh, HORIZONTAL_ALIGNMENT horizontalAlign, VERTICAL_ALIGNMENT vertAlign)
+        {
 #if WINDOWS_PHONE || NETFX_CORE
            //Phone implementation
            //If the basegrid object is null it will just return, just a safety check
@@ -133,10 +116,17 @@ namespace Windows_Ad_Plugin
            //Sets its height, width, appid, unitid and such and then uses the margin to position it on screen
            //Finally its added to the children of the basegrid
 
+           //A check to make sure we do not get duplicate ads
+           if(_ad != null)
+            return;
+
            //This should be called prior to calling this function but just in case...
            //Lets check if the grid/panel exists
            if (!HasGrid())
+           {
                _isBuilt = false;
+               _errorMessage = "Missing grid to attach ad to";
+           }
            try
            {
                _ad = new AdControl();
@@ -147,7 +137,8 @@ namespace Windows_Ad_Plugin
                _ad.Width = width;
                _ad.Height = height;
 
-               _ad.Margin = new Thickness(left, top, 0, 0);
+               _ad.VerticalAlignment = ConvertVerticalAlignment(vertAlign);
+               _ad.HorizontalAlignment = ConvertHorizontalAlignment(horizontalAlign);
 
 
 #if WINDOWS_PHONE
@@ -174,36 +165,42 @@ namespace Windows_Ad_Plugin
            }
            catch (Exception e)
            {
-               _errorMessage = "Exception caught: " + e.Message;
+               _errorMessage = "PubCenter Error: " + e.Message;
                _isBuilt = false;
            }
 #else
             //function will return and do nothing if its in Unity editor
-           _isBuilt = false;
+            _isBuilt = false;
 #endif
-       }
+        }
 
         /*<Summary>
          * AdMob overload
         </Summery>*/
-       public void CreateAd(string adUnit, AD_FORMATS format, double left, double top, double width, double height, bool testAd)
+        public void CreateAd(string adUnit, AD_FORMATS format, HORIZONTAL_ALIGNMENT horizontalAlign, VERTICAL_ALIGNMENT vertAlign, double width, double height, bool testAd)
         {
 #if WINDOWS_PHONE
             Dispatcher.InvokeOnUIThread(() =>
             {
-                BuildAd(adUnit, format,left,top,width,height,testAd);
+                BuildAd(adUnit, format,horizontalAlign,vertAlign,width,height,testAd);
             });
 #endif
         }
 
-       /*<Summary>
-        * Builds an admob ad
-       </Summery>*/
-       private void BuildAd(string adUnit, AD_FORMATS format, double left, double top,double width, double height, bool testAd)
+        /*<Summary>
+         * Builds an admob ad
+        </Summery>*/
+        private void BuildAd(string adUnit, AD_FORMATS format, HORIZONTAL_ALIGNMENT horizontalAlign, VERTICAL_ALIGNMENT vertAlign, double width, double height, bool testAd)
         {
 #if WINDOWS_PHONE
-            if (!HasGrid())
-                _isBuilt = false;
+           if(_ad_Google != null)
+            return;
+
+           if (!HasGrid())
+           {
+               _isBuilt = false;
+               _errorMessage = "Missing grid to attach ad to";
+           }
 
             try
             {
@@ -212,12 +209,16 @@ namespace Windows_Ad_Plugin
                     Format = ConvertAdFormat(format),
                     AdUnitID = adUnit
                 };
-
-                _ad_Google.Width = width;
-                _ad_Google.Height = height;
-
-                _ad_Google.Margin = new Thickness(left, top, 0, 0);
-
+                
+                if (format != AD_FORMATS.SMART_BANNER)
+                {
+                    _ad_Google.Width = width;
+                    _ad_Google.Height = height;
+                    _ad_Google.HorizontalAlignment = ConvertHorizontalAlignment(horizontalAlign);
+                }
+   
+                _ad_Google.VerticalAlignment = ConvertVerticalAlignment(vertAlign);
+            
                 _ad_Google.ReceivedAd += OnAdReceived;
                 _ad_Google.FailedToReceiveAd += OnFailedToReceiveAd;
 
@@ -232,14 +233,12 @@ namespace Windows_Ad_Plugin
                     adRequest.ForceTesting = true;
                     _ad_Google.LoadAd(adRequest);
                 }
-
-
-
+                
                 _isBuilt = true;
             }
             catch(Exception e)
             {
-                _errorMessage = "Exception caught: " + e.Message;
+                _errorMessage = "AdMob Error: " + e.Message;
                 _isBuilt = false;
             }
 #endif
@@ -269,16 +268,18 @@ namespace Windows_Ad_Plugin
 #endif
 
         public void SetGrid(object grid)
-       {
+        {
 #if WINDOWS_PHONE
            baseGrid = (DrawingSurfaceBackgroundGrid)grid;
 #elif NETFX_CORE
+            Debug.WriteLine(grid);
             backPanel = (SwapChainBackgroundPanel)grid;
+
 #else
             //Unity or some such
             return;
 #endif
-       }
+        }
 
         public bool HasGrid()
         {
@@ -289,13 +290,17 @@ namespace Windows_Ad_Plugin
             else
                 return true;
 #elif NETFX_CORE
-           if(backPanel == null)
-            return false;
-           else
-            return true;
+            if (backPanel == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
 #else
-           //Within unity
-           return false;
+            //Within unity
+            return false;
 #endif
         }
 #if WINDOWS_PHONE
@@ -359,14 +364,30 @@ namespace Windows_Ad_Plugin
 #if WINDOWS_PHONE
             LaunchBrowserPhone(link);
 #elif NETFX_CORE
-            LaunchBrowserRT(link);
+            Dispatcher.InvokeOnUIThread(() =>
+            {
+                LaunchBrowserRT(link);
+            });
 #endif
         }
 
 #if NETFX_CORE
         private async void LaunchBrowserRT(string link)
         {
-           await Windows.System.Launcher.LaunchUriAsync(new Uri(link));
+            bool success = false;
+            try
+            {
+                //Set the option to show a warning
+                var options = new Windows.System.LauncherOptions();
+                options.TreatAsUntrusted = true;
+
+                Uri l = new Uri(link);
+                success = await Windows.System.Launcher.LaunchUriAsync(l, options);
+            }
+            catch(Exception e)
+            {
+                _errorMessage = e.Message;
+            }
         }
 #endif
 #if WINDOWS_PHONE
@@ -379,7 +400,7 @@ namespace Windows_Ad_Plugin
 #endif
 
 
- 
+
 
 #if WINDOWS_PHONE
         /*<Summary>
@@ -401,6 +422,45 @@ namespace Windows_Ad_Plugin
         }
 #endif
 
+#if WINDOWS_PHONE || NETFX_CORE
+        /*<Summary>
+         * Just our own converter for the  alignment enumerations
+        </Summery>*/
+        private VerticalAlignment ConvertVerticalAlignment(VERTICAL_ALIGNMENT f)
+        {
+            switch (f)
+            {
+                case VERTICAL_ALIGNMENT.BOTTOM:
+                    return VerticalAlignment.Bottom;
+                case VERTICAL_ALIGNMENT.TOP:
+                    return VerticalAlignment.Top;
+                case VERTICAL_ALIGNMENT.CENTER:
+                    return VerticalAlignment.Center;
+                default:
+                    return VerticalAlignment.Center;
+            }
+        }
+
+        /*<Summary>
+        * Just our own converter for the  alignment enumerations
+        </Summery>*/
+        private HorizontalAlignment ConvertHorizontalAlignment(HORIZONTAL_ALIGNMENT f)
+        {
+            switch (f)
+            {
+                case HORIZONTAL_ALIGNMENT.LEFT:
+                    return HorizontalAlignment.Left;
+                case HORIZONTAL_ALIGNMENT.RIGHT:
+                    return HorizontalAlignment.Right;
+                case HORIZONTAL_ALIGNMENT.CENTER:
+                    return HorizontalAlignment.Center;
+                default:
+                    return HorizontalAlignment.Center;
+            }
+        }
+#endif
+
+
 
         /*<Summary>
          * Will destroy the current ad if need be
@@ -417,11 +477,14 @@ namespace Windows_Ad_Plugin
             {
                 baseGrid.Children.RemoveAt(_adIndex);
             });
+            _ad = null;
+            _ad_Google = null;
 #elif NETFX_CORE
              Dispatcher.InvokeOnUIThread(() =>
             {
                 backPanel.Children.RemoveAt(_adIndex);
             });
+            _ad = null;
 #endif
 
         }

@@ -1,5 +1,0 @@
-Assembly-CSharp.dll
-GoogleAds.dll
-Microsoft.Advertising.Mobile.dll
-Microsoft.Advertising.Mobile.UI.dll
-WindowsHelperPlugin.dll
