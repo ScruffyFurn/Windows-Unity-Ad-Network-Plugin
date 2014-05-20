@@ -49,6 +49,9 @@
      <Compile Include="Assets\Scripts\AdMobAd.cs" />
      <Compile Include="Assets\Scripts\PubCenterAd.cs" />
      <Compile Include="Assets\Scripts\SceneChanger.cs" />
+ <Reference Include="WindowsHelperPlugin">
+ <HintPath>Assets\Plugins\WindowsHelperPlugin.dll</HintPath>
+ </Reference>
  <Reference Include="Windows_Ad_Plugin">
  <HintPath>Assets\Plugins\Windows_Ad_Plugin.dll</HintPath>
  </Reference>
