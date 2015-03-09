@@ -1,0 +1,5 @@
+Assembly-CSharp.dll
+Microsoft.Advertising.WinRT.dll
+Microsoft.Advertising.WinRT.UI.dll
+UnityEngine.UI.dll
+Windows_Ad_Plugin.dll

@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\UnityCommon.props" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{9A513B19-3E02-41BF-8968-58BC58B0A6B3}</ProjectGuid>
+    <OutputType>AppContainerExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Template</RootNamespace>
+    <AssemblyName>Template</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PackageCertificateKeyFile>MetroTestCertificate.pfx</PackageCertificateKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;UNITY_METRO;UNITY_METRO_8_1</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;UNITY_METRO;UNITY_METRO_8_1</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;UNITY_METRO;UNITY_METRO_8_1</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;UNITY_METRO;UNITY_METRO_8_1</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Master|ARM'">
+    <OutputPath>bin\ARM\Master\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;UNITY_METRO;UNITY_METRO_8_1</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Master|x86'">
+    <OutputPath>bin\x86\Master\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;UNITY_METRO;UNITY_METRO_8_1</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="MetroTestCertificate.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="UnityPlayer, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Players\Windows81\$(PlatformTarget)\$(Configuration)\UnityPlayer.winmd</HintPath>
+    </Reference>
+    <Reference Include="WinRTBridge">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Players\Windows81\$(PlatformTarget)\$(Configuration)\WinRTBridge.winmd</HintPath>
+    </Reference>
+    <Reference Include="BridgeInterface">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Players\Windows81\$(PlatformTarget)\$(Configuration)\BridgeInterface.winmd</HintPath>
+    </Reference>
+    <Reference Include="UnityEngineDelegates">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Players\Windows81\$(PlatformTarget)\$(Configuration)\UnityEngineDelegates.winmd</HintPath>
+    </Reference>
+    <Reference Include="UnityEngineProxy">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Players\Windows81\$(PlatformTarget)\$(Configuration)\UnityEngineProxy.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+    </ApplicationDefinition>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Reference Include="Assembly-CSharp.dll">
+      <HintPath>.\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Page Include="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Reference Include="Microsoft.Advertising.WinRT.dll">
+      <HintPath>.\Microsoft.Advertising.WinRT.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Advertising.WinRT.UI.dll">
+      <HintPath>.\Microsoft.Advertising.WinRT.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.dll">
+      <HintPath>.\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI.dll">
+      <HintPath>.\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Windows_Ad_Plugin.dll">
+      <HintPath>.\Windows_Ad_Plugin.dll</HintPath>
+    </Reference>
+    <Reference Include="WinRTLegacy.dll">
+      <HintPath>.\WinRTLegacy.dll</HintPath>
+    </Reference>
+    <Content Include="Assets\MediumTile.scale-100.png">
+    </Content>
+    <Content Include="Assets\SmallLogo.scale-100.png">
+    </Content>
+    <Content Include="Assets\SplashScreen.scale-100.png">
+    </Content>
+    <Content Include="Assets\StoreLogo.scale-100.png">
+    </Content>
+    <Content Include="Assets\WideTile.scale-100.png">
+    </Content>
+    <Compile Include="Properties\AssemblyInfo.cs">
+    </Compile>
+    <Content Include="Data\**">
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <SDKReference Include="Microsoft.VCLibs, Version=12.0">
+      <Name>Microsoft Visual C++ Runtime Package</Name>
+    </SDKReference>
+    <SDKReference Include="MSAdvertisingXaml, Version=8.1">
+      <Name>Microsoft Advertising SDK for Windows 8.1 %28Xaml%29</Name>
+    </SDKReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>echo UnityInstallationDir '$(UnityInstallationDir)'
+echo UnityProjectDir '$(UnityProjectDir)'
+echo Copying assemblies...
+copy /Y "$(ProjectDir)Unprocessed\*" "$(ProjectDir)"
+echo Running AssemblyConverter...
+"$(UnityWSAPlayerDir)\Tools\AssemblyConverter.exe" -platform=wsa81 "$(ProjectDir)\Assembly-CSharp.dll" "$(ProjectDir)\UnityEngine.dll" "$(ProjectDir)\UnityEngine.UI.dll" "$(ProjectDir)\WinRTLegacy.dll"
+echo AssemblyConverter done.
+</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

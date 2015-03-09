@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="5690124f-fc55-46e9-a779-d3d74227a06d" Publisher="CN=DefaultCompany" Version="1.0.0.0" ProcessorArchitecture="x86" />
+  <PhoneIdentity PhoneProductId="5690124f-fc55-46e9-a779-d3d74227a06d" PhonePublisherId="00000000-0000-0000-0000-000000000000" xmlns="http://schemas.microsoft.com/appx/2014/phone/manifest" />
+  <Properties>
+    <DisplayName>PluginTest</DisplayName>
+    <PublisherDisplayName>DefaultCompany</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2.1</OSMinVersion>
+    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="PluginTest.App">
+      <VisualElements DisplayName="PluginTest" Square150x150Logo="Assets\MediumTile.png" Square44x44Logo="Assets\AppIcon.png" Description="PluginTest" ForegroundText="light" BackgroundColor="transparent" xmlns="http://schemas.microsoft.com/appx/2014/manifest">
+        <DefaultTile ShortName="PluginTest" Square71x71Logo="Assets\SmallTile.png" DefaultSize="square150x150Logo">
+        </DefaultTile>
+        <SplashScreen Image="Assets\SplashScreen.png" />
+      </VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+    <Capability Name="internetClientServer" />
+  </Capabilities>
+</Package>

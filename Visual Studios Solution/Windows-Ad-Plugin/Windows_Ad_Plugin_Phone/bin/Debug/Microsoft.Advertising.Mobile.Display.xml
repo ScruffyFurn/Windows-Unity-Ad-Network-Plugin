@@ -1,0 +1,1578 @@
+<?xml version="1.0" encoding="utf-8"?><doc>
+    <assembly>
+        <name>Microsoft.Advertising.Mobile.Display</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Advertising.Mobile.Display.AbstractBannerAd">
+            <summary>
+            class to share common functionality of banner ads that display images
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.Advertisement">
+            <summary>
+            An Advertisement is a base class for all types of ads. It regroups all common properties
+            and methods for advertisements.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.IAdvertisement">
+            <summary>
+            Interface for advertisement class
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.IAdvertisement.Close">
+            <summary>
+            Close the advertisement to free its resources.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.IAdvertisement.ReportImpression">
+            <summary>
+            Report an impression for the ad by calling all of the impression URLs that 
+            were in the ad response returned by the server.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.IAdvertisement.IsActionSupported(Microsoft.Advertising.Mobile.Display.AdAction)">
+            <summary>
+            Verifies if a particular action is supported within the context of this ad.
+            </summary>
+            <param name="action">Action to test.</param>
+            <returns>true or false if the action is supported for this type of ad.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.IAdvertisement.DoAction(Microsoft.Advertising.Mobile.Display.AdAction,System.Action)">
+            <summary>
+            Performs the specified action on the ad, if the ad supports it.
+            </summary>
+            <param name="action">Action to perform.</param>
+            <param name="browseAction">Override the default browse action.</param>
+            <remarks>Currently it only supports click to call and click to browse actions.</remarks>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.IAdvertisement.GetActionUrl(Microsoft.Advertising.Mobile.Display.AdAction)">
+            <summary>
+            Gets the URL for the action.
+            </summary>
+            <param name="action">Action for which the URL is requested.</param>
+            <returns>The action url for click to browse and click to call actions, an empty string otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.IAdvertisement.SetResponseData(System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Set response data received from network.
+            </summary>
+            <param name="adTTL">Time to live for ad.</param>
+            <param name="adTypeString">Type of ad.</param>
+            <param name="adNode">JSON node containing complete ad information.</param>
+            <param name="eventNode">JSON node containing information for impression/event report.</param>
+            <param name="assetNode">JSON node containing creative assets information.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.IAdvertisement.BeginSecondaryDownload">
+            <summary>
+            Start downloading any secondary assets for the ad.
+            </summary>
+            <returns>Whether download was started.</returns>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.IAdvertisement.ImpressionAttempted">
+            <summary>
+            Gets the flag indicating if the impression reporting has been attempted or not.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.IAdvertisement.Expired">
+            <summary>
+            Checks if the Ad is expired or not.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.IAdvertisement.AdType">
+            <summary>
+            Gets the type of the ad
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.IAdvertisement.RequiresSecondaryDownload">
+            <summary>
+            Whether there are secondary assets to download for the ad.
+            </summary>
+            <returns>Whether additional download is needed.</returns>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.ElemAdResponse">
+            <summary>
+            Various element and attribute names and their values in the ad response from the back-end
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.ImpressionURLSuffix1">
+            <summary>
+            Impression URL Suffixes for search Ad
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.MaxImpressionReportNumber">
+            <summary>
+            Count of max number of impressions
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.MaxTrackingReportNumber">
+            <summary>
+            Count of max number of tracking urls
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.DefaultTTLMinutes">
+            <summary>
+            Default TTL for an Ad in minutes
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.MinMillisecondsBetweenActions">
+            <summary>
+            To prevent "double-clicks" from triggering an action twice, we require a minimum time between actions.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.lockObj">
+            <summary>
+            Lock for critical sections
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.lastActionTime">
+            <summary>
+            The time that the user last performed an action on the ad (i.e. clicked). Used to prevent 
+            triggering actions multiple times if the user double-clicks.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.closed">
+            <summary>
+            ad is closed or not
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.expirationTime">
+            <summary>
+            Ad expiration time
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.adType">
+            <summary>
+            Type of Ad
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.browseActionData">
+            <summary>
+            Data associated with the browse action
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.callActionData">
+            <summary>
+            Data associated with the call action
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.richMediaActionData">
+            <summary>
+            Data associated with the rich media action
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.impressionURLs">
+            <summary>
+            Array of impression URLs
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.advertiserLocation">
+            <summary>
+            Location asset information for the ad
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.impressionAttempted">
+            <summary>
+            Flag to denote if the impression reporting has already been attempted for the ad or not.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.impressionReportingRequestWrapper">
+            <summary>
+            Wrapper for impression reporting requests
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Advertisement.clickToCallReportingRequestWrapper">
+            <summary>
+            Wrapper for click-to-call reporting requests
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.#ctor(Microsoft.Advertising.Mobile.Common.AdType)">
+            <summary>
+            Constructor for subclasses
+            </summary>
+            <param name="adType"></param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.#ctor(System.Collections.Generic.List{System.String},Microsoft.Advertising.Mobile.Display.ActionMetaData,Microsoft.Advertising.Mobile.Display.ActionMetaData,Microsoft.Advertising.Mobile.Display.ActionMetaData,Microsoft.Advertising.Mobile.Display.LocationAsset,Microsoft.Advertising.Mobile.Common.AdType,System.DateTime)">
+            <summary>
+            Advertisement constructor.
+            </summary>
+            <param name="impressionUrlList">List of impression urls associated with the action.</param>
+            <param name="callAction">Data associated with the call action.</param>
+            <param name="browseAction">Data associated with the browse action.</param>
+            <param name="richMediaAction">Data associated with the rich media action.</param>
+            <param name="location">The location of the advertising business.</param>
+            <param name="type">The ad type.</param>
+            <param name="expiration">The date the ad expires.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.SetResponseData(System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Serialize from parsed json data
+            </summary>
+            <param name="adTTL">Time to live for ad.</param>
+            <param name="adTypeString">Type of ad.</param>
+            <param name="adNode">JSON node containing complete ad information.</param>
+            <param name="eventNode">JSON node containing information for impression/event report.</param>
+            <param name="assetNode">JSON node containing creative assets information.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.BeginSecondaryDownload">
+            <summary>
+            Start downloading any secondary assets for the ad.
+            </summary>
+            <returns>Whether secondary download was needed.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.Close">
+            <summary>
+            Release resources allocated for this ad upon disposing (dispose isn't the right word--fix).
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.IsActionSupported(Microsoft.Advertising.Mobile.Display.AdAction)">
+            <summary>
+            Verifies if a particular action is supported within the context of this ad.
+            </summary>
+            <param name="action">Action to test.</param>
+            <returns>true or false if the action is supported for this type of ad.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.GetActionUrl(Microsoft.Advertising.Mobile.Display.AdAction)">
+            <summary>
+            Gets the URL for the action.
+            </summary>
+            <param name="action">Action for which the URL is requested.</param>
+            <returns>The action url for click to browse and click to call actions, an empty string otherwise.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.DoAction(Microsoft.Advertising.Mobile.Display.AdAction,System.Action)">
+            <summary>
+            Performs the specified action on the ad, if the ad supports it.
+            </summary>
+            <param name="action">Action to perform.</param>
+            <param name="customAction">Override the default browse action.</param>
+            <remarks>Currently it only supports click to call and click to browse actions.</remarks>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.ReportImpression">
+            <summary>
+            Report an impression for the ad by calling all of the impression URLs that 
+            were in the ad response returned by the server.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.ReportClickToCall">
+            <summary>
+            Report Click-to-Call
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.DoNothing(Microsoft.Advertising.Mobile.Common.IWebRequestWrapper)">
+            <summary>
+            Empty function for required web callbacks
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.CreateWebRequestWrapper(Microsoft.Advertising.Mobile.Common.HttpRequestData[],System.Boolean)">
+            <summary>
+            Create a web request wrapper
+            </summary>
+            <param name="httpRequestsData">Array of input web requests data.</param>
+            <param name="continueOnFailure">Whether to continue to the next web request if any web request fails.</param>
+            <returns>The IWebRequestDerived class instance.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.GetImpressionUrlSuffix(System.String,System.Object)">
+            <summary>
+            Constructs the impression URL suffix.
+            </summary>
+            <param name="adType">Ad Type.</param>
+            <param name="adNode">JSON Node for the ad.</param>
+            <returns>Impression URL suffix.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.AppendImpressionUrlSuffix(System.String,System.String)">
+            <summary>
+            Appends the impression URL suffix to the URL.
+            </summary>
+            <param name="impressionUrl">Impression URL.</param>
+            <param name="impressionUrlSuffix">Suffix value.</param>
+            <returns>Impression URL with suffix appended.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.IsValidAction(Microsoft.Advertising.Mobile.Display.AdAction)">
+            <summary>
+            Checks if the specified action is valid or not.
+            </summary>
+            <param name="action">Action to validate.</param>
+            <returns>true or false if the action is valid or not.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.GetAdType(System.String)">
+            <summary>
+             Gets the type of ad.
+            </summary>
+            <param name="adType">string value for adType.</param>
+            <returns> ad type (from AdType).</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Advertisement.ParseExpiration(System.DateTime,System.String)">
+            <summary>
+            Get the expiration time from the input string and the current time
+            </summary>
+            <param name="now">The current time.</param>
+            <param name="adTTLMin">Time to live value for ad in minutes.</param>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Advertisement.ImpressionAttempted">
+            <summary>
+            Gets/Sets the flag indicating if the impression reporting has been attempted or not.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Advertisement.ClickToBrowseLabel">
+            <summary>
+            Gets Click to browse label.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Advertisement.ClickToCallLabel">
+            <summary>
+            Gets Click to call label.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Advertisement.AdvertiserLocation">
+            <summary>
+            Gets Location asset information for the advertiser.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Advertisement.Expired">
+            <summary>
+            Checks if the Ad is expired or not.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Advertisement.ImpressionURLs">
+            <summary>
+            The list of impression urls
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Advertisement.AdType">
+            <summary>
+            Gets the type of the ad
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.AssetTypeImage">
+            <summary>
+            Image tag name
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.imageAsset">
+            <summary>
+            Image asset
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.webRequestWrapper">
+            <summary>
+            Web request for downloading the image
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.adDownloadCompleteCallback">
+            <summary>
+            Callback to notify the result of image download
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.webLockObj">
+            <summary>
+            Lock Object for synchronization
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.#ctor(Microsoft.Advertising.Mobile.Display.AdDownloadCompleteCallback)">
+            <summary>
+            Constructor for BannerAd.
+            </summary>
+            <param name="adDownloadCompleteCallback">Callback to notify when the image download is complete.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.#ctor(Microsoft.Advertising.Mobile.Display.ImageAsset,Microsoft.Advertising.Mobile.Display.AdDownloadCompleteCallback,Microsoft.Advertising.Mobile.Common.IWebHeaderCollection)">
+            <summary>
+            Constructor for BannerAd.
+            </summary>
+            <param name="adDownloadCompleteCallback">Callback to notify when the image download is complete.</param>
+            <param name="imgAsset">The image asset associated with this BannerAd.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.BeginSecondaryDownload">
+            <summary>
+            Start downloading any secondary assets for the ad.
+            </summary>
+            <returns>Whether secondary download was needed.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.Close">
+            <summary>
+            Cancels any pending web requests and closes the ad.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.WebRequestComplete(Microsoft.Advertising.Mobile.Common.IWebRequestWrapper)">
+            <summary>
+            Callback function to revieve the result of the image download.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.AlternateText">
+            <summary>
+            Gets the Alternate Text for image.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.ImageType">
+            <summary>
+            Gets the ImageType value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.Image">
+            <summary>
+            Gets the Image buffer value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.ImageHeight">
+            <summary>
+            Gets the Image Height value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.ImageWidth">
+            <summary>
+            Gets the Image Width value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AbstractBannerAd.ImageUrl">
+            <summary>
+            Gets the image url
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.AdAction">
+            <summary>
+            Represent the actions allowed on an Ad
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdAction.Browse">
+            <summary>
+            Represent the action where a web browser is evoked to display a web page
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdAction.Call">
+            <summary>
+            Represent a phone call action
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdAction.Map">
+            <summary>
+            Represents a click to map action
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdAction.RichMedia">
+            <summary>
+            Represents a rich media action
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdAction.First">
+            <summary>
+            First action - new actions need to be inserted before these two
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdAction.Last">
+            <summary>
+             Last action - new actions need to be inserted before these two
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.NewAdSubscriber">
+            <summary>
+            Delegate to notify the result of a new ad fetch.
+            </summary>
+            <param name="adPlacement">Ad placement for which the notification is fired.</param>
+            <param name="exception">Any exception that occured while fetching the ad. For successful downloaded of an ad, this will be null.</param>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.AdPlacementSize">
+            <summary>
+            Struct to contain properties pertaining to the size of an ad placement.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacementSize.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Constructor to create size struct.
+            </summary>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdPlacementSize.Height">
+            <summary>
+            The height dimension of the size.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdPlacementSize.Width">
+            <summary>
+            The width dimension of the size.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.AdPlacement">
+            <summary>
+            Class: AdPlacement
+            The AdPlacement class represents an ad placement within an application
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.HttpRequestValueTypeRichMedia">
+            <summary>
+            Rich media ad request value.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.webHeaderCollection">
+            <summary>
+            Used by unit tests to avoid WebHeaderCollection.ctor(), which throws a System.InvalidProgramException.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.location">
+            <summary>
+            Stores the current location of the user.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.keywords">
+            <summary>
+            Keywords for targeting associated with this AdPlacement.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.subscriber">
+            <summary>
+            Subscriber for ad download and error event notifications.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.instanceLockObj">
+            <summary>
+            Lock for synchronizing access to instance data.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.webRequestWrapper">
+            <summary>
+            Web request for downloading an ad
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.currentAd">
+            <summary>
+            Current ad instance.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.lastAd">
+            <summary>
+            Last ad instance.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.nextAd">
+            <summary>
+            Instance of ad currently being fetched.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.isDownloadingAd">
+            <summary>
+            Flag to check if an ad is being downloaded or not.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.pendingAdRefreshNotification">
+            <summary>
+            Flag to check if we need to notify the caller on ad refresh or not.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.closed">
+            <summary>
+            Flag to check if the placement has been closed or not.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.AdPlacement.adSize">
+            <summary>
+            Rectangle defining the size and position of the ad
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.#ctor(System.String,Microsoft.Advertising.Mobile.Common.AdType,Microsoft.Advertising.Mobile.Common.ImageType,Microsoft.Advertising.Mobile.Display.NewAdSubscriber,Microsoft.Advertising.Mobile.Display.AdPlacementSize,Microsoft.Advertising.Mobile.Common.EventBroadcaster,Microsoft.Advertising.Mobile.Common.IWebHeaderCollection)">
+            <summary>
+            Private constructor - the public interface exposes a static create method.
+            </summary>
+            <param name="adUnitId">the id of the specific ad placement within the application</param>
+            <param name="adTypes">the types of ad supported by this placement.</param>
+            <param name="imageTypes">types of images supported by a banner ad - ignored for text ads.</param>
+            <param name="subscriber">the subscriber for ad download notifications</param>
+            <param name="adSize">the size of the ad to be retrieved</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.CreateAdPlacement(System.String,Microsoft.Advertising.Mobile.Common.AdType,Microsoft.Advertising.Mobile.Common.ImageType,Microsoft.Advertising.Mobile.Display.NewAdSubscriber,Microsoft.Advertising.Mobile.Display.AdPlacementSize,Microsoft.Advertising.Mobile.Common.EventBroadcaster)">
+            <summary>
+            Creates a new AdPlacement with the specified parameters.
+            </summary>
+            <param name="adUnitId">the id of the specific ad placement within the application</param>
+            <param name="adTypes">the types of ad supported by this placement. This can be a single
+             value from the values specified in {@link AdType}, or an OR combination of values
+             such as AdType.TEXT | AdType.BANNER.</param>
+            <param name="imageTypes">types of images supported by a banner ad - ignored for text ads.
+             This can be a single type from {@link AdPlacement}, or an OR combination of types
+             such as AdPlacement.IMAGE_TYPE_JPG | AdPlacement.IMAGE_TYPE_PNG.</param>
+            <param name="subscriber">the event handler for ad download notifications</param>
+            <param name="adSize">the size of the ad to be retrieved</param>
+            <param name="eventBroadcaster">the object that owns surfacing error events to the publisher.  Should only be null for unit tests</param>
+            <returns>the created AdPlacement</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.ReportImpression(Microsoft.Advertising.Mobile.Display.IAdvertisement)">
+            <summary>
+            Reports an impression on the given ad.
+            </summary>
+            <param name="ad">Advertisement on which to report an impression</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.InvalidateAd(Microsoft.Advertising.Mobile.Display.IAdvertisement)">
+            <summary>
+            Invalidates the ad
+            </summary>
+            <param name="ad">Advertisement to invalidate.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.GetAdvertisement(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Gets the next ad
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.Close">
+            <summary>
+            Closes the placement and cancels any pending web requests
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.Resize(Microsoft.Advertising.Mobile.Display.AdPlacementSize)">
+            <summary>
+            Change dimensions of the ad.
+            </summary>
+            <param name="size">The new size.</param>
+            <exception cref="T:Microsoft.Advertising.Mobile.Common.WebRequestException">When the webrequest fails.</exception>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.CreateWebRequestWrapper(Microsoft.Advertising.Mobile.Common.HttpRequestData[],System.Boolean)">
+            <summary>
+            Create a web request wrapper
+            </summary>
+            <param name="httpRequestsData">Array of input web requests data.</param>
+            <param name="continueOnFailure">Whether to continue to the next web request if any web request fails.</param>
+            <returns>The IWebRequestDerived class instance.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.CreateAdvertisement(System.Byte[])">
+            <summary>
+            Create an Advertisement object from a JSON reponse
+            </summary>
+            <param name="bytes">Bytes representing the server response.</param>
+            <returns>The instanciated Advertisement object.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.ConstructAdRequestUrl">
+            <summary>
+            Constructs the Ad request Url.
+            </summary>
+            <returns>Url for the request.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.GetAdvertisementInternal(System.Boolean,System.Boolean)">
+            <summary>
+            Returns the current valid ad and if needed, starts the web request for fetching the next ad.
+            </summary>
+            <param name="notifyOnRefresh">Flag to decide if we need to notify the caller when the new ad fetch is complete.</param>
+            <param name="forceDownload">Flag to decide if we need to force download the next ad. This will only work if there is no pending ad download and when we need to 
+            refresh the current ad even though its still valid (like AdControl got re-sized). If the currently pending ad downloads needs to be invalidated as well,
+            the caller should cancel them before calling this function.</param>
+            <returns>Current valid ad.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.AdRequestCompleted(System.Object,Microsoft.Advertising.Mobile.Common.RequestCompleteEventArgs)">
+            <summary>
+            Notification called whenever metadata is downloaded for the new ad.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdPlacement.AdDownloadComplete(Microsoft.Advertising.Mobile.Display.IAdvertisement,Microsoft.Advertising.Mobile.Common.AdException)">
+            <summary>
+            Notification called when all the data has been downloaded for an ad, for example when
+            all the images have been downloaded for a banner ad.
+            <param name="ad">Ad that got downloaded</param>
+            <param name="exception">Any exception that occureded while downloading the ad</param>
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdPlacement.AdTags">
+            <summary>
+            Gets or sets the ad tags to be passed into the ad delivery engine.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdPlacement.Location">
+            <summary>
+            Current user location
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdPlacement.Keywords">
+            <summary>
+            Gets or sets the keywords as a comma-separated list. Keywords provide the context of the ad placement and are instrumental in targeting ads.
+            If the value being set is not valid (exceeds the maximum length), the value is silently dropped and no keywords will be sent to the server.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdPlacement.AdUnitId">
+            <summary>
+            Placement Id
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdPlacement.ImageTypes">
+            <summary>
+            Image types supported by this placement
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdPlacement.AdTypes">
+            <summary>
+            Ad types supported by this placement
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.ActionMetaData">
+            <summary>
+            Data for an action which is possible to take on an ad.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.ActionMetaData.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Constructor with data
+            </summary>
+            <param name="url">The associated url (or phone number).</param>
+            <param name="label">The associated label.</param>
+            <param name="trackingUrl">The tracking url.</param>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.ActionMetaData.Url">
+            <summary>
+            The URL (or phone number) associated with the action
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.ActionMetaData.Label">
+            <summary>
+            The label to display along side the action
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.ActionMetaData.TrackingUrl">
+            <summary>
+            URL to report interaction to
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.AdvertisementFactory">
+            <summary>
+            Concrete type to create advertisement objects.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.IAdvertisementFactory">
+            <summary>
+            Interface for types that can create ads from server response.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.IAdvertisementFactory.CreateFromResponse(System.String,Microsoft.Advertising.Mobile.Display.AdDownloadCompleteCallback)">
+            <summary>
+            Create an Advertisement object from the server response.
+            </summary>
+            <param name="response">The string response.</param>
+            <param name="adDownloadCompleteCallback">Callback to invoke when the ad is downloaded.</param>
+            <returns>The new Advertisement instance.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdvertisementFactory.#ctor(Microsoft.Advertising.Mobile.Common.IDataParser)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="parser">The data parser to use.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdvertisementFactory.CreateFromResponse(System.String,Microsoft.Advertising.Mobile.Display.AdDownloadCompleteCallback)">
+            <summary>
+            Create an Advertisement object from the server response.
+            </summary>
+            <param name="response">The string response.</param>
+            <param name="adDownloadCompleteCallback">Callback to invoke when the ad is downloaded.</param>
+            <returns>The new Advertisement instance.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdvertisementFactory.CreateFromRafResponse(System.Object)">
+            <summary>
+            Create an Advertisement object from a server response in the RAF 1.2 format.
+            </summary>
+            <param name="adResponseNode">ambiguous pointer to an object holding a parsed "adrsp" JSON object</param>
+            <returns>the ad</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdvertisementFactory.GetEventNode(System.String,System.Object,System.Object)">
+            <summary>
+            Extract the event node based on ad type
+            </summary>
+            <param name="adTypeString">String identifying the type of ad.</param>
+            <param name="adResponseNode">The ad reponse node.</param>
+            <param name="creativeNode">The creative node.</param>
+            <returns>The extracted event node.</returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdvertisementFactory.CreateAd(Microsoft.Advertising.Mobile.Common.AdType,Microsoft.Advertising.Mobile.Display.AdDownloadCompleteCallback)">
+            <summary>
+            Create an Advertisement object of the correct type
+            </summary>
+            <param name="adType">The type of ad to create.</param>
+            <param name="callback">The download complete callback.</param>
+            <returns>The new Advertisement object.</returns>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.BannerAd">
+            <summary>
+            A BannerAd is an advertisement displaying an image within an ad placement.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.BannerAd.#ctor(Microsoft.Advertising.Mobile.Display.AdDownloadCompleteCallback)">
+            <summary>
+            Constructor for BannerAd.
+            </summary>
+            <param name="adDownloadCompleteCallback">Callback to notify when the image download is complete.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.BannerAd.#ctor(Microsoft.Advertising.Mobile.Display.ImageAsset,Microsoft.Advertising.Mobile.Display.AdDownloadCompleteCallback)">
+            <summary>
+            Constructor for BannerAd.
+            </summary>
+            <param name="adDownloadCompleteCallback">Callback to notify when the image download is complete.</param>
+            <param name="imgAsset">The image asset associated with this BannerAd.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.BannerAd.#ctor(Microsoft.Advertising.Mobile.Display.ImageAsset,Microsoft.Advertising.Mobile.Display.AdDownloadCompleteCallback,Microsoft.Advertising.Mobile.Common.IWebHeaderCollection)">
+            <summary>
+            For unit tests. It crashes when initializing WebHeaderCollection so use a mocked one instead.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.BannerAd.SetResponseData(System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Serialize from parsed json data
+            </summary>
+            <param name="adTTL">time to live for ad.</param>
+            <param name="adTypeString">type of ad.</param>
+            <param name="adNode">JSON node containing complete ad information.</param>
+            <param name="eventNode">JSON node containing information for impression/event report.</param>
+            <param name="assetNode">JSON node containing creative assets information.</param>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.AdDownloadCompleteCallback">
+            <summary>
+            Delegate to notify the completion of ad download. This is fired for ads that have 
+            images or secondary data that needs to be downloaded asynchronously.
+            </summary>
+            <param name="ad">Ad that got downloaded.</param>
+            <param name="exception">Any exception that occured while fetching ad. 'ad' is null if there is any exception.</param>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.ImageAsset">
+            <summary>
+            Class for containing image asset attribute values.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.ImageAsset.AttrAltText">
+            <summary>
+            Various element and attribute names and values in response from the back-end
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.ImageAsset.width">
+            <summary>
+            Width of image
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.ImageAsset.height">
+            <summary>
+            Height of image
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.ImageAsset.buffer">
+            <summary>
+            Image Buffer
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.ImageAsset.imageType">
+            <summary>
+            Image type
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.ImageAsset.altText">
+            <summary>
+            Image alternate text
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.ImageAsset.#ctor(System.UInt32,System.UInt32,System.Byte[],System.String,Microsoft.Advertising.Mobile.Common.ImageType)">
+            <summary>
+            Constructor from properties
+            </summary>
+            <param name="width">The image width.</param>
+            <param name="height">The image height.</param>
+            <param name="imageBuffer">The raw image bytes.</param>
+            <param name="altText">Alternative text for the image</param>
+            <param name="imgType">The image type.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.ImageAsset.#ctor(System.Object)">
+            <summary>
+            Constructor for ImageAsset.
+            </summary>
+            <param name="jsonData">JSON node with image data.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.ImageAsset.UpdateImageInfo(System.Byte[],System.String)">
+            <summary>
+             Updates the image information once the image download is complete
+            </summary>
+            <param name="imageBuffer">Image buffer.</param>
+            <param name="contentType">Content Type of Image.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.ImageAsset.GetImageType(System.String)">
+            <summary>
+             Helper method that converts the string version of an image type to ImageType enum
+            </summary>
+            <param name="inputType">content type header string received while downloading the image.</param>
+            <returns>ImageType equivalent for this string</returns>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.ImageAsset.AlternateText">
+            <summary>
+            Gets Alternate text value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.ImageAsset.ImageType">
+            <summary>
+            Gets Image Type value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.ImageAsset.ImageHeight">
+            <summary>
+            Gets Image Height value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.ImageAsset.ImageWidth">
+            <summary>
+            Gets Image Width value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.ImageAsset.Image">
+            <summary>
+            Gets Image buffer value
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.ImageAsset.ImageUrl">
+            <summary>
+            Image Url
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.LocationAsset">
+            <summary>
+            Class for containing location asset attribute values.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.AttrLatitude">
+            <summary>
+            Latitude tag Name
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.AttrLongitude">
+            <summary>
+            Longitude tag Name
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.AttrCity">
+            <summary>
+            City tag Name
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.AttrState">
+            <summary>
+            State tag Name
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.AttrPostalCode">
+            <summary>
+            Postal Code tag Name
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.AttrCountry">
+            <summary>
+            Country tag Name
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.AttrAddress1">
+            <summary>
+            Address Line 1 tag Name
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.city">
+            <summary>
+            City value
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.state">
+            <summary>
+            State value
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.postalCode">
+            <summary>
+            Postal Code value
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.country">
+            <summary>
+            Country value
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.address">
+            <summary>
+            Address value
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.latitude">
+            <summary>
+            Latitude value
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.longitude">
+            <summary>
+            Longitude value
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.LocationAsset.hasCoordinates">
+            <summary>
+            Is the cordinates information available
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.LocationAsset.#ctor(System.Object)">
+            <summary>
+            Constructs LocationAsset from location JSON Object.
+            </summary>
+            <param name="locationObj">JSON Object Node for location info.</param>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.LocationAsset.AddressLine">
+            <summary>
+            Gets Address Line value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.LocationAsset.City">
+            <summary>
+            Gets City value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.LocationAsset.PostalCode">
+            <summary>
+            Gets Postal Code value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.LocationAsset.State">
+            <summary>
+            Gets State value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.LocationAsset.Country">
+            <summary>
+            Gets Country value.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.LocationAsset.Latitude">
+            <summary>
+            Gets Latitude value.
+            </summary>
+            <remarks>Throws InvalidOperationException if the cordinates information is not available.</remarks>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.LocationAsset.Longitude">
+            <summary>
+            Gets Longitude value.
+            </summary>
+            <remarks>Throws InvalidOperationException if the cordinates information is not available.</remarks>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.LocationAsset.HasCoordinateData">
+            <summary>
+            Verify if cordinates information is present or not
+            </summary>
+            <returns>True if cordinates info is present, false otherwise.</returns>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.PolymorphicAd">
+            <summary>
+            An html5 ad that achieves platform independence by using platform-specific renderers
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.PolymorphicAd.WIN_PHONE_8_RENDERER">
+            <summary>
+            Platform name to pass to GetRenderer() for windows phone 8.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.PolymorphicAd.GetRenderer(System.String)">
+            <summary>
+            Returns the renderer that should be used for the given platform name.
+            </summary>
+            <param name="name">The name of the platform/canvas the renderer is intended for.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.PolymorphicAd.SetResponseData(System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Serialize from parsed json data
+            </summary>
+            <param name="adTTL">time to live for ad.</param>
+            <param name="adTypeString">type of ad.</param>
+            <param name="adNode">JSON node containing complete ad information.</param>
+            <param name="eventNode">JSON node containing information for impression/event report.</param>
+            <param name="assetNode">JSON node containing creative assets information.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.PolymorphicAd.SetResponseData(System.Object,System.Object,System.Object)">
+            <summary>
+            Serialized from parsed RAF 1.2 json data
+            </summary>
+            <param name="rdr"></param>
+            <param name="ad"></param>
+            <param name="prm"></param>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.PolymorphicAd.adContents">
+            <summary>
+            Contents of the adrsp/ad json object in a RAF 1.2 response,
+            which is the exact string we pass verbatim to the renderer.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.PolymorphicAd.adParameters">
+            <summary>
+            Contents of the adrsp/prm json object in a RAF 1.2 response,
+            which is the exact string we pass verbatim to the renderer.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.ProtocolException">
+            <summary>
+            Represents errors that might occur due to invalid ad response format/protocol.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.ProtocolException.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.ProtocolException.#ctor(System.String)">
+            <summary>
+            Constructor taking string as parameter
+            </summary>
+            <param name="message">Error message</param>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.RapidAdFormatUtils.RafError">
+            <summary>
+            Class that represents the err section of a RAF 1.2 response.  See Section 3.5 of the RAF 1.2 spec.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Renderer.c">
+            <summary>
+            key in RAF 1.2 json for the renderer's canvas element.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.Renderer.u">
+            <summary>
+            key in RAF 1.2 json for the renderer's uri element
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Renderer.fromRafJson(System.Collections.Generic.List{System.Object})">
+            <summary>
+            Deserialize renderer list from an object List created by JSONReader parsing a RAF 1.2 response.
+            </summary>
+            <param name="rdr"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Renderer.Canvas">
+            <summary>
+            The type of surface the renderer supports.  RAF key is "c".
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Renderer.Uri">
+            <summary>
+            The url where the script can be downloaded.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.RendererException">
+            <summary>
+            When the Renderer calls ormma.aderror, when that gets to c# we turn it into this class to distinguish it from the other errors. We do this because we have behavior
+            that only needs to happen when we have this type of error.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.RichMediaAd">
+            <summary>
+             A RichMediaAd is an advertisement displaying html content with rich interactivity
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.RichMediaAd.#ctor">
+            <summary>
+            Constructor for Html5RichMediaAd.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.RichMediaAd.SetResponseData(System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Serialize from parsed json data
+            </summary>
+            <param name="adTTL">time to live for ad.</param>
+            <param name="adTypeString">type of ad.</param>
+            <param name="adNode">JSON node containing complete ad information.</param>
+            <param name="eventNode">JSON node containing information for impression/event report.</param>
+            <param name="assetNode">JSON node containing creative assets information.</param>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.RichMediaAd.RichMediaContent">
+            <summary>
+            the html and javascript of the rich media ad
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.RichMediaAd.TrackingUrl">
+            <summary>
+            the tracking url
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.ServerSideErrorException.#ctor(Microsoft.Advertising.Mobile.Display.RapidAdFormatUtils.RafError)">
+            <summary>
+            Instantiates a new instance of the exception based on an error response from the ad server.
+            </summary>
+            <param name="err">Error reported in a RAF 1.2 response from the ad server.</param>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.TextAd">
+            <summary>
+            A TextAd is an advertisement displaying few lines of text within an ad placement.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.TextAd.TextAssetNameTitle">
+            <summary>
+            The value of the asset's Name attribute when the Value contains the title.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.TextAd.TextAssetNameDescription">
+            <summary>
+            The value of the asset's Name attribute when the Value contains the description.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.TextAd.TextAssetNameBusinessName">
+            <summary>
+            The value of the asset's Name attribute when the Value contains the businessName.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Advertising.Mobile.Display.TextAd.TextAssetNameDomainName">
+            <summary>
+            The value of the asset's Name attribute when the Value contains the domainName.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.TextAd.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.TextAd.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Constructor for TextAd.
+            </summary>
+            <param name="title">The ad title text.</param>
+            <param name="description">The description provided in the ad.</param>
+            <param name="businessName">The name of the business that is advertising.</param>
+            <param name="domainName">The domain name of the business that is advertising.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.TextAd.SetResponseData(System.String,System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Serialize from parsed json data
+            </summary>
+            <param name="adTTL">time to live for ad.</param>
+            <param name="adTypeString">type of ad.</param>
+            <param name="adNode">JSON node containing complete ad information.</param>
+            <param name="eventNode">JSON node containing information for impression/event report.</param>
+            <param name="assetNode">JSON node containing creative assets information.</param>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.TextAd.Title">
+            <summary>
+            Title value
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.TextAd.Description">
+            <summary>
+            Description value
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.TextAd.BusinessName">
+            <summary>
+            Business name value
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.TextAd.DomainName">
+            <summary>
+            Domain Name value
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.AdManager">
+            <summary>
+            Admanager class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdManager.#cctor">
+            <summary>
+            Class constructor, initialize static fields
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdManager.#ctor">
+            <summary>
+            Initialize a new AdControl with the provided parameters.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.AdManager.Deinitialize">
+            <summary>
+            Uninitializes the singleton AdManager and releases resources.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdManager.ApplicationId">
+            <summary>
+            The application ID of the app as registered in pubCenter.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdManager.LocalTest">
+            <summary>
+            Whether we are running a real ad in the emulator, this is required for the validation app only
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdManager.Current">
+            <summary>
+            Gets the singleton AdManager that was previously initialized.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdManager.CountryOrRegion">
+            <summary>
+            A 2-character country code of the user of the application, shared by all ad placements.
+            If this is set to a value that is not 2 characters, the value will be ignored.
+            </summary>
+            <remarks>
+            The country code uses the ISO 3166-1 standard specified at
+            <a href="http://www.iso.org/iso/country_codes/iso_3166_code_lists/english_country_names_and_code_elements.htm">http://www.iso.org/iso/country_codes/iso_3166_code_lists/english_country_names_and_code_elements.htm</a>.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.AdManager.PostalCode">
+            <summary>
+            The postal code of the user of the application.
+            If this is set to a value that is exceeds the maximum length, the value will be ignored.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.RendererOptions">
+            <summary>
+            Provides access to store renderer options
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.RendererOptions.#ctor">
+            <summary>
+            create a renderer options class
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.RendererOptions.AddRendererOption(System.String,System.String)">
+            <summary>
+            Add a renderer option to the options for ad control. The maximum is 10 options per ad control, if maximum is exceeded an exception will be thrown. 
+            </summary>
+            <param name="optionName">name of the renderer option. Maximum of 16 characters, if exceeded an exception will be thrown.</param>
+            <param name="optionValue">value of the option. Maximum of 128 characters, if exceeded an exception will be thrown.</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.RendererOptions.RemoveRendererOption(System.String)">
+            <summary>
+            remove a renderer option from the options for the ad control
+            </summary>
+            <param name="optionName">name of renderer option, ignored if not exists</param>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.RendererOptions.GetOptionsJson">
+            <summary>
+            return options in a json string format
+            </summary>
+        </member>
+        <member name="T:Microsoft.Advertising.Mobile.Display.Resources.Strings">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Advertising.Mobile.Display.Resources.Strings.getResourceContext">
+            <summary>
+                Context based on current culture
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Resources.Strings.ResourceMap">
+            <summary>
+              Returns the cached ResourceMap instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Resources.Strings.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Resources.Strings.ActionMenuTitle">
+            <summary>
+              Looks up a localized string similar to Advertisement.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Resources.Strings.BrowseTextPrefix">
+            <summary>
+              Looks up a localized string similar to browse.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Resources.Strings.CallTextPrefix">
+            <summary>
+              Looks up a localized string similar to call.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Resources.Strings.CancelButtonText">
+            <summary>
+              Looks up a localized string similar to cancel.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Resources.Strings.Ellipses">
+            <summary>
+              Looks up a localized string similar to ....
+            </summary>
+        </member>
+        <member name="P:Microsoft.Advertising.Mobile.Display.Resources.Strings.ResponseError">
+            <summary>
+              Looks up a localized string similar to Request failed with error code: {0}.
+            </summary>
+        </member>
+    </members>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>JZGa6P+Hk2fvOzCGGoFRZpW8vYw=</DigestValue></Reference></SignedInfo><SignatureValue>
+    ZuVAOQiUldEox7Smijl74YZU/9umFxtwHgb7MEAFnRctd0AY4UaLzsTQ+qDlsG1Xfj+7v0ss
+    g14ndNt1AejAIsbcxe0ELImmQxf40JY8SFrSCDwq1oR/ggciiaP4d8Z76kBQLrj1qkyCEdES
+    zlK2o+ayFI5Ki8pwrM08NS5qkP3E3SQ+Z+EQkoS4X54dNjQVbl7rrzeHFy9RywbeFCjmJ1J4
+    Q6YXC/FIOOCHQb5cIJe6NiWtsICleNpOqBiYzAPiIpDl63ZT1h4jX8lxx1RDPaWX352GEXML
+    u1XIqvoXFVRAJDpO6Lqj1P2z1ft1tpnWyS6REORSmY1nyQYHuyyfxw==
+  </SignatureValue><KeyInfo>
+      <KeyValue>
+        <RSAKeyValue>
+          <Modulus>
+            lnFd7QZG+oTLnVu3Rsew4bQROQOtsRVzYJzrp7ZuGjw//2XjNPGmpSFeVplsWOSSoQpcwtPc
+            Ui8MZZogYUBTMZxsjyF9uvn+E1BSYJU6W7lYpXRhQamU4K0mTkyhl3BJJ158Z8pPHnGERrwd
+            S7biD8XGJ8kH5noKpRcAGUxwRTgtgbRQqsVn0fp5vMXMoXKb9CU0mPhU3xI5OBIvpGulmn7H
+            YtHcz+09NPi53zUwuux5MqnhqaxVTUx/TFbDEwt28Qf5zEes+4jVUqUeKPo9Lc/PhJiGcWUR
+            z4XJCUSG4W/nsfysQESlqYsjP4JJndWWWVATWRhz/0MMrSvUfzBAZw==
+          </Modulus>
+          <Exponent>AQAB</Exponent>
+        </RSAKeyValue>
+      </KeyValue>
+      <X509Data>
+        <X509Certificate>
+          MIIE7DCCA9SgAwIBAgITMwAAAMps1TISNcThVQABAAAAyjANBgkqhkiG9w0BAQUFADB5MQsw
+          CQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwG
+          A1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSMwIQYDVQQDExpNaWNyb3NvZnQgQ29kZSBT
+          aWduaW5nIFBDQTAeFw0xNDA0MjIxNzM5MDBaFw0xNTA3MjIxNzM5MDBaMIGDMQswCQYDVQQG
+          EwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMV
+          TWljcm9zb2Z0IENvcnBvcmF0aW9uMQ0wCwYDVQQLEwRNT1BSMR4wHAYDVQQDExVNaWNyb3Nv
+          ZnQgQ29ycG9yYXRpb24wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCWcV3tBkb6
+          hMudW7dGx7DhtBE5A62xFXNgnOuntm4aPD//ZeM08aalIV5WmWxY5JKhClzC09xSLwxlmiBh
+          QFMxnGyPIX26+f4TUFJglTpbuVildGFBqZTgrSZOTKGXcEknXnxnyk8ecYRGvB1LtuIPxcYn
+          yQfmegqlFwAZTHBFOC2BtFCqxWfR+nm8xcyhcpv0JTSY+FTfEjk4Ei+ka6Wafsdi0dzP7T00
+          +LnfNTC67HkyqeGprFVNTH9MVsMTC3bxB/nMR6z7iNVSpR4o+j0tz8+EmIZxZRHPhckJRIbh
+          b+ex/KxARKWpiyM/gkmd1ZZZUBNZGHP/QwytK9R/MEBnAgMBAAGjggFgMIIBXDATBgNVHSUE
+          DDAKBggrBgEFBQcDAzAdBgNVHQ4EFgQUH17iXVCNVoa+SjzPBOinh7XLv4MwUQYDVR0RBEow
+          SKRGMEQxDTALBgNVBAsTBE1PUFIxMzAxBgNVBAUTKjMxNTk1K2I0MjE4ZjEzLTZmY2EtNDkw
+          Zi05YzQ3LTNmYzU1N2RmYzQ0MDAfBgNVHSMEGDAWgBTLEejK0rQWWAHJNy4zFha5TJoKHzBW
+          BgNVHR8ETzBNMEugSaBHhkVodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpL2NybC9wcm9k
+          dWN0cy9NaWNDb2RTaWdQQ0FfMDgtMzEtMjAxMC5jcmwwWgYIKwYBBQUHAQEETjBMMEoGCCsG
+          AQUFBzAChj5odHRwOi8vd3d3Lm1pY3Jvc29mdC5jb20vcGtpL2NlcnRzL01pY0NvZFNpZ1BD
+          QV8wOC0zMS0yMDEwLmNydDANBgkqhkiG9w0BAQUFAAOCAQEAd1zr15E9zb17g9mFqbBDnXN8
+          F8kP7Tbbx7UsG177VAU6g3FAgQmit3EmXtZ9tmw7yapfXQMYKh0nfgfpxWUftc8Nt1THKDha
+          iOd7wRm2VjK64szLk9uvbg9dRPXUsO8b1U7Brw7vIJvy4f4nXejF/2H2GdIoCiKd381wgp4Y
+          ctgjzHosQ+7/6sDg5h2qnpczAFJvB7jTiGzepAY1p8JThmURdwmPNVm52IaoAP74MX0s9IwF
+          ncDB1XdybOlNWSaD8cKyiFeTNQB8UCu8Wfz+HCk4gtPeUpdFKRhOlludul8bo/EnUOoHleht
+          NA04V9w3KDWVOjic1O1qhV0OIhFeew==
+        </X509Certificate>
+      </X509Data>
+      <X509Data>
+        <X509Certificate>
+          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
+        </X509Certificate>
+      </X509Data>
+      <X509Data>
+        <X509Certificate>
+          MIIFvDCCA6SgAwIBAgIKYTMmGgAAAAAAMTANBgkqhkiG9w0BAQUFADBfMRMwEQYKCZImiZPy
+          LGQBGRYDY29tMRkwFwYKCZImiZPyLGQBGRYJbWljcm9zb2Z0MS0wKwYDVQQDEyRNaWNyb3Nv
+          ZnQgUm9vdCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMTAwODMxMjIxOTMyWhcNMjAwODMx
+          MjIyOTMyWjB5MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMH
+          UmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSMwIQYDVQQDExpNaWNy
+          b3NvZnQgQ29kZSBTaWduaW5nIFBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+          ALJyWVwZMGS/HZpgICBCmXZTbD4b1m/My/Hqa/6XFhDg3zp0gxq3L6Ay7P/ewkJOI9VyANs1
+          VwqJyq4gSfTwaKxNS42lvXlLcZtHB9r9Jd+ddYjPqnNEf9eB2/O98jakyVxF3K+tPeAoaJca
+          p6Vyc1bxF5Tk/TWUcqDWdl8ed0WDhTgW0HNbBbpnUo2lsmkv2hkL/pJ0KeJ2L1TdFDBZ+NKN
+          Yv3LyV9GMVC5JxPkQDDPcikQKCLHN049oDI9kM2hOAaFXE5WgigqBTK3S9dPY+fSLWLxRT3n
+          rAgA9kahntFbjCZT6HqqSvJGzzc8OJ60d1ylF56NyxGPVjzBrAlfA9MCAwEAAaOCAV4wggFa
+          MA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFMsR6MrStBZYAck3LjMWFrlMmgofMAsGA1Ud
+          DwQEAwIBhjASBgkrBgEEAYI3FQEEBQIDAQABMCMGCSsGAQQBgjcVAgQWBBT90TFO0yaKleGY
+          YDuoMW+mPLzYLTAZBgkrBgEEAYI3FAIEDB4KAFMAdQBiAEMAQTAfBgNVHSMEGDAWgBQOrIJg
+          QFYnl+UlE/wq4QpTlVnkpDBQBgNVHR8ESTBHMEWgQ6BBhj9odHRwOi8vY3JsLm1pY3Jvc29m
+          dC5jb20vcGtpL2NybC9wcm9kdWN0cy9taWNyb3NvZnRyb290Y2VydC5jcmwwVAYIKwYBBQUH
+          AQEESDBGMEQGCCsGAQUFBzAChjhodHRwOi8vd3d3Lm1pY3Jvc29mdC5jb20vcGtpL2NlcnRz
+          L01pY3Jvc29mdFJvb3RDZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAgEAWTk+fyZGr+tvQLEy
+          tWrrDi9uqEn361917Uw7LddDrQv+y+ktMaMjzHxQmIAhXaw9L0y6oqhWnONwu7i0+Hm1SXL3
+          PupBf8rhDBdpy6WcIC36C1DEVs0t40rSvHDnqA2iA6VW4LiKS1fylUKc8fPv7uOGHzQ8uFaa
+          8FMjhSqkghyT4pQHHfLiTviMocroE6WRTsgb0o9ylSpxbZsa+BzwU9ZnzCL/XB3Nooy9J7J5
+          Y1ZEolHN+emjWFbdmwJFRC9f9Nqu1IIybvyklRPk62nnqaIsvsgrEA5ljpnb9aL6EiYJZTiU
+          8XofSrvR4Vbo0HiWGFzJNRZf3ZMdSY4tvq00RBzuEBUaAF3dNVshzpjHCe6FDoxPbQ4TTj18
+          KUicctHzbMrB7HCjV5JXfZSNoBtIA1r3z6NnCnSlNu0tLxfI5nI3EvRvsTxngvlSso0zFmUe
+          DordEN5k9G/ORtTTF+l5xAS00/ss3x+KnqwK+xMnQK3k+eGpf0a7B2BHZWBATrBC7E7ts3Z5
+          2Ao0CW0cgDEf4g5U3eWh++VHEK1kmP9QFi58vwUheuKVQSdpw5OPlcmN2Jshrg1cnPCiroZo
+          gwxqLbt2awAdlq3yFnv2FoMkuYjPaqhHMS+a3ONxPdcAfmJH0c6IybgY+g5yjcGjPa8CQGr/
+          aZuW4hCoELQ3UAjWwz0=
+        </X509Certificate>
+      </X509Data>
+    </KeyInfo><Object id="ts-countersig"><X509Data><X509Certificate>MIIEwzCCA6ugAwIBAgITMwAAADf+ve3c0lQBawAAAAAANzANBgkqhkiG9w0BAQUFADB3MQswCQYD
+VQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMV
+TWljcm9zb2Z0IENvcnBvcmF0aW9uMSEwHwYDVQQDExhNaWNyb3NvZnQgVGltZS1TdGFtcCBQQ0Ew
+HhcNMTMwMzI3MjAwODI5WhcNMTQwNjI3MjAwODI5WjCBszELMAkGA1UEBhMCVVMxEzARBgNVBAgT
+Cldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jwb3Jh
+dGlvbjENMAsGA1UECxMETU9QUjEnMCUGA1UECxMebkNpcGhlciBEU0UgRVNOOjdEMkUtMzc4Mi1C
+MEY3MSUwIwYDVQQDExxNaWNyb3NvZnQgVGltZS1TdGFtcCBTZXJ2aWNlMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAwdnnUSmKUvW56djPhbul3BuJzOBTY/59t5DmyCsL79CNcr45xYLc
+vJeuIRNoPyXYB+9rGEejBsfnvr3N/eOS5TuWd2Fx7wo4Yrz84LKLmWfiKxHG48VPciVSCGgK/kFI
+hIIpLNguA7o2hozQUvYX/sWIP+f4adbLx3dgPuaig4XtprW/YKwYKzdZ6DzbYgHnwXNCP5V1lxHW
+G0hjaum4dHqz1bUJY095jU36q0dZjObTorCexxGPmHLlamVh1qQng8tUrH3vRBXVi703poGeckrf
+ALTTnRAysAaOIRpfBfSnmxubFDfQt0dqQWu6EBn2G6L9MFpDM0awUc0LbL4GDwIDAQABo4IBCTCC
+AQUwHQYDVR0OBBYEFAQ0TlArtSCgG/FtYmQK2rqUIHAjMB8GA1UdIwQYMBaAFCM0+NlSRnAK7UD7
+dvuzK7DDNbMPMFQGA1UdHwRNMEswSaBHoEWGQ2h0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9wa2kv
+Y3JsL3Byb2R1Y3RzL01pY3Jvc29mdFRpbWVTdGFtcFBDQS5jcmwwWAYIKwYBBQUHAQEETDBKMEgG
+CCsGAQUFBzAChjxodHRwOi8vd3d3Lm1pY3Jvc29mdC5jb20vcGtpL2NlcnRzL01pY3Jvc29mdFRp
+bWVTdGFtcFBDQS5jcnQwEwYDVR0lBAwwCgYIKwYBBQUHAwgwDQYJKoZIhvcNAQEFBQADggEBAIsK
+imiiF1JDvqzJ9DbFfaacTCboZpXzCSKyTBnofZ7qIphqqhA9pLZVfnOae94WdVstA5Kcu7YobE03
+nwIlTQy9brg56RDTmK26FPAneJiRDwsjU1LRm7PSSE9lAe2rxeb8wW3LKAIEE8QY4mvH2CelBfsq
+zGRgPXctppVINg66Tba9EGo9Hob+H4d3eefrkqC6EaeLGILL67YPwrDub9ys8AZKE5C5Vxw0ov8j
+r3SXzKoVwiXTy0X07UNo/T5zNFBbfaCDyWVukN8T09dwwVShlEnA8d3J2K7w3hFYnpA+9dlm9NuM
+wj8PdOcHaRDfMp6G5kaIsOCTZHZ7a4WO4Ls=</X509Certificate></X509Data><X509Data><X509Certificate>MIIGBzCCA++gAwIBAgIKYRZoNAAAAAAAHDANBgkqhkiG9w0BAQUFADBfMRMwEQYKCZImiZPyLGQB
+GRYDY29tMRkwFwYKCZImiZPyLGQBGRYJbWljcm9zb2Z0MS0wKwYDVQQDEyRNaWNyb3NvZnQgUm9v
+dCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMDcwNDAzMTI1MzA5WhcNMjEwNDAzMTMwMzA5WjB3
+MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwG
+A1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSEwHwYDVQQDExhNaWNyb3NvZnQgVGltZS1TdGFt
+cCBQQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCfoWyx39tIkip8ay4Z4b3i48WZ
+USNQrc7dGE4kD+7Rp9FMrXQwIBHrB9VUlRVJlBtCkq6YXDAm2gBr6Hu97IkHD/cOBJjwicwfyzMk
+h53y9GccLPx754gd6udOo6HBI1PKjfpFzwnQXq/QsEIEovmmbJNn1yjcRlOwhtDlKEYuJ6yGT1VS
+DOQDLPtqkJAwbofzWTCd+n7Wl7PoIZd++NIT8wi3U21StEWQn0gASkdmEScpZqiX5NMGgUqi+YSn
+EUcUCYKfhO1VeP4Bmh1QCIUAEDBG7bfeI0a7xC1Un68eeEExd8yb3zuDk6FhArUdDbH895uyAc4i
+S1T/+QXDwiALAgMBAAGjggGrMIIBpzAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBQjNPjZUkZw
+Cu1A+3b7syuwwzWzDzALBgNVHQ8EBAMCAYYwEAYJKwYBBAGCNxUBBAMCAQAwgZgGA1UdIwSBkDCB
+jYAUDqyCYEBWJ5flJRP8KuEKU5VZ5KShY6RhMF8xEzARBgoJkiaJk/IsZAEZFgNjb20xGTAXBgoJ
+kiaJk/IsZAEZFgltaWNyb3NvZnQxLTArBgNVBAMTJE1pY3Jvc29mdCBSb290IENlcnRpZmljYXRl
+IEF1dGhvcml0eYIQea0WoUqgpa1Mc1j0BxMuZTBQBgNVHR8ESTBHMEWgQ6BBhj9odHRwOi8vY3Js
+Lm1pY3Jvc29mdC5jb20vcGtpL2NybC9wcm9kdWN0cy9taWNyb3NvZnRyb290Y2VydC5jcmwwVAYI
+KwYBBQUHAQEESDBGMEQGCCsGAQUFBzAChjhodHRwOi8vd3d3Lm1pY3Jvc29mdC5jb20vcGtpL2Nl
+cnRzL01pY3Jvc29mdFJvb3RDZXJ0LmNydDATBgNVHSUEDDAKBggrBgEFBQcDCDANBgkqhkiG9w0B
+AQUFAAOCAgEAEJeKw1wDRDbd6bStd9vOeVFNAbEudHFbbQwTq86+e4+4LtQSooxtYrhXAstOIBNQ
+md16QOJXu69YmhzhHQGGrLt48ovQ7DsB7uK+jwoFyI1I4vBTFd1Pq5Lk541q1YDB5pTyBi+FA+mR
+KiQicPv2/OR4mS4N9wficLwYTp2OawpylbihOZxnLcVRDupiXD8WmIsgP+IHGjL5zDFKdjE9K3IL
+yOpwPf+FChPfwgphjvDXuBfrTot/xTUrXqO/67x9C0J71FNyIe4wyrt4ZVxbARcKFA7S2hSY9Ty5
+ZlizLS/n+YWGzFFW6J1wlGysOUzU9nm/qhh6YinvopspNAZ3GmLJPR5tH4LwC8csu89Ds+X57H21
+46SodDW4TsVxIxImdgs8UoxxWkZDFLyzs7BNZ8ifQv+AeSGAnhUwZuhCEl4ayJ4iIdBD6Svpu/RI
+zCzU2DKATCYqSCRfWupW76bemZ3KOm+9gSd0BhHudiG/m4LBJ1S2sWo9iaF2YbRuoROmv6pH8BJv
+/YoybLL+31HIjCPJZr2dHYcSZAI9La9Zj7jkIeW1sMpjtHhUBdRBLlCslLCleKuzoJZ1GtmShxN1
+Ii8yqAhuoFuMJb+g74TKIdbrHk/Jmu5J4PcBZW+JC33Iacjmbuqnl84xKf8OxVtc2E0bodj6L54/
+LlUWa8kTo/0=</X509Certificate></X509Data><CounterSignature xmlns="http://schemas.microsoft.com/xmldsig/timestamp/2003" ts-format="cms-timestamp-message">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</CounterSignature></Object></Signature></doc>
